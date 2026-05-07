@@ -1,0 +1,308 @@
+flowchart TB
+    %% ============== STYLES ==============
+    classDef aiStyle fill:#0c4a6e,stroke:#38bdf8,stroke-width:2px,color:#f0f9ff
+    classDef hybridStyle fill:#713f12,stroke:#facc15,stroke-width:2px,color:#fefce8
+    classDef humanStyle fill:#14532d,stroke:#4ade80,stroke-width:2px,color:#f0fdf4
+    classDef gateStyle fill:#450a0a,stroke:#ef4444,stroke-width:3px,color:#fef2f2
+    classDef brainStyle fill:#1e1b4b,stroke:#818cf8,stroke-width:3px,color:#eef2ff
+    classDef checkpoint fill:#7c2d12,stroke:#fb923c,stroke-width:3px,color:#fff7ed
+    classDef snapshot fill:#1f2937,stroke:#9ca3af,stroke-width:2px,color:#f9fafb
+    classDef winner fill:#14532d,stroke:#22c55e,stroke-width:3px,color:#f0fdf4
+    classDef loser fill:#450a0a,stroke:#dc2626,stroke-width:2px,color:#fef2f2
+    classDef reportStyle fill:#365314,stroke:#a3e635,stroke-width:2px,color:#ecfccb
+
+    %% ============== LEGEND ==============
+    subgraph LEGEND["🗺️ LEGEND — WHO DOES WHAT"]
+        direction LR
+        L1[🤖 AI / Automated]:::aiStyle
+        L2[🤝 AI + Human Review]:::hybridStyle
+        L3[👤 Human-Led]:::humanStyle
+        L4{🚪 Approval Gate}:::gateStyle
+        L5{{🔍 Auto Triage}}:::checkpoint
+    end
+
+    %% ============== INPUT ==============
+    subgraph INPUT["🎯 INPUT"]
+        direction LR
+        I1[Site URL & Tool Access]:::aiStyle
+        I2[👤 Business Goal & ICP]:::humanStyle
+        I3[👤 Brand Voice]:::humanStyle
+    end
+
+    %% ============== AUDIT ==============
+    subgraph AUDIT["🔬 PHASE 0 — WEBSITE AUDIT"]
+        direction TB
+        subgraph CRAWL["Crawl"]
+            A1[Site Crawler]:::aiStyle
+            A2[Page Classifier]:::aiStyle
+            A3[JS Render Diff]:::aiStyle
+        end
+        subgraph TECHAUD["Technical"]
+            A4[Core Web Vitals]:::aiStyle
+            A5[Indexability]:::aiStyle
+            A6[Status & Redirects]:::aiStyle
+            A7[Security & Mobile]:::aiStyle
+        end
+        subgraph ONPAGE["On-Page"]
+            A8[Meta & Headings]:::aiStyle
+            A9[Schema Validator]:::aiStyle
+            A10[Image / Alt]:::aiStyle
+            A11[Thin Content]:::aiStyle
+        end
+        subgraph CONTENTAUD["Content"]
+            A12[Topical Inventory]:::aiStyle
+            A13[Cannibalization]:::hybridStyle
+            A14[Decay Detector]:::aiStyle
+            A15[Quality Scorer]:::hybridStyle
+        end
+        subgraph AUTHAUD["Authority"]
+            A16[Backlink Profile]:::aiStyle
+            A17[Toxic Link Review]:::hybridStyle
+        end
+        subgraph COMPAUD["Competitive"]
+            A19[Rank Baseline]:::aiStyle
+            A21[Competitor ID]:::hybridStyle
+        end
+        subgraph ANAUD["Analytics"]
+            A22[Tracking Auditor]:::aiStyle
+        end
+    end
+
+    SYN[📑 Synthesis Agent]:::hybridStyle
+    PRIO[👤 Backlog Prioritization]:::humanStyle
+    REPORT[/📄 Audit Report + SEO Brief/]:::reportStyle
+    GATE1{🚪 Approve Audit Plan}:::gateStyle
+
+    %% ============== ORCHESTRATOR ==============
+    ORCH{{🧠 SEO Orchestrator}}:::brainStyle
+
+    %% ============== RESEARCH ==============
+    subgraph RESEARCH["🔍 RESEARCH"]
+        direction TB
+        R1[Keyword Data]:::aiStyle
+        R2[SERP Analysis]:::aiStyle
+        R3[Trend Detection]:::aiStyle
+        R4[Intent Classifier]:::hybridStyle
+        R5[Competitor Gap]:::hybridStyle
+        R6[👤 Customer / SME Research]:::humanStyle
+    end
+
+    %% ============== STRATEGY ==============
+    subgraph STRATEGY["📋 STRATEGY"]
+        direction TB
+        S1[Topic Cluster Builder]:::aiStyle
+        S2[Priority Scorer]:::hybridStyle
+        S3[Content Calendar]:::hybridStyle
+        S4[👤 Editorial Angle & POV]:::humanStyle
+    end
+
+    GATE2{🚪 Approve Strategy & Calendar}:::gateStyle
+
+    %% ============== TWO TRACKS ==============
+    subgraph FIX["🔧 TRACK A — TECHNICAL REMEDIATION"]
+        direction TB
+        F1[Schema / Sitemap Push]:::aiStyle
+        F2[Image Optimization]:::aiStyle
+        F3[Meta Tag Fixes]:::aiStyle
+        F4[Canonicals · robots · Redirects]:::hybridStyle
+    end
+
+    subgraph CONTENT["✍️ TRACK B — CONTENT GENERATION"]
+        direction TB
+        C1[Brief Generator]:::hybridStyle
+        C2[Outline Agent]:::hybridStyle
+        C3[👤 WRITER<br/>SME w/ AI co-pilot]:::humanStyle
+        C4[Editor Agent]:::hybridStyle
+        C5[Fact-Check Agent]:::hybridStyle
+        C6[Meta Tags]:::aiStyle
+        C7[Schema Markup]:::aiStyle
+        C8[Alt Text]:::aiStyle
+    end
+
+    %% ============== QA ==============
+    QA_AI[🤖 AI Quality Checks<br/><i>schema · brand voice · plagiarism</i>]:::aiStyle
+    QA_HUMAN{🚪 Human Final Read}:::gateStyle
+
+    %% ============== PUBLISH ==============
+    subgraph PUB["🚀 PUBLISH & DISTRIBUTE"]
+        direction TB
+        P1[Non-Content Auto-Push]:::aiStyle
+        P2{🚪 Content Publish Approval}:::gateStyle
+        P3[CMS Push]:::aiStyle
+        P4[Internal Linking]:::hybridStyle
+        P5[Index Ping]:::aiStyle
+        P6[Distribution Drafts]:::hybridStyle
+        P7[👤 Human Posts Social/Email]:::humanStyle
+    end
+
+    %% ============== AFTERCARE — NEW PHASE ==============
+    BASELINE[📸 Baseline Snapshot Agent<br/><i>captures T-zero state</i>]:::aiStyle
+    AC_ORCH{{🧠 Aftercare Orchestrator<br/><i>schedules cadenced checks</i>}}:::brainStyle
+
+    subgraph DAY7["🟢 DAY 7 — HEALTH CHECK"]
+        direction TB
+        D7_1[Indexation Verifier]:::aiStyle
+        D7_2[Crawl Errors]:::aiStyle
+        D7_3[Early CTR / Impressions]:::aiStyle
+        D7_4[Schema · Rich Result]:::aiStyle
+        D7_5[Internal Link Verify]:::aiStyle
+        D7_6[Distribution Performance]:::aiStyle
+    end
+    D7_TRIAGE{{🔍 Day-7 Triage}}:::checkpoint
+    D7_FIX[Auto-fix or Flag]:::hybridStyle
+
+    subgraph DAY30["🟡 DAY 30 — TRAJECTORY"]
+        direction TB
+        D30_1[Rank Trajectory]:::aiStyle
+        D30_2[Traffic vs Forecast]:::aiStyle
+        D30_3[Cannibalization Re-Check]:::hybridStyle
+        D30_4[Backlink Earn Tracker]:::aiStyle
+        D30_5[Engagement Metrics]:::aiStyle
+        D30_6[SERP Feature Capture]:::aiStyle
+    end
+    D30_TRIAGE{{🔍 Day-30 Triage}}:::checkpoint
+
+    subgraph DAY90["🔴 DAY 90 — MATURITY"]
+        direction TB
+        D90_1[Full Performance Pull]:::aiStyle
+        D90_2[Conversion Attribution]:::aiStyle
+        D90_3[Topical Authority Lift]:::aiStyle
+        D90_4[Competitor Move Detection]:::aiStyle
+        D90_5[ROI Calculator]:::aiStyle
+        D90_6[👤 Strategic Review]:::humanStyle
+    end
+    D90_CLASSIFY{{🔍 Classification Engine}}:::checkpoint
+
+    subgraph OUTCOMES["📊 OUTCOMES → ACTION"]
+        direction LR
+        O1[🏆 WINNER]:::winner
+        O2[➡️ STEADY]:::aiStyle
+        O3[⚠️ UNDERPERFORMER]:::hybridStyle
+        O4[💀 LOSER]:::loser
+    end
+
+    subgraph REPURPOSE["✂️ CONTENT CREATION (winners)"]
+        direction TB
+        CC1[Repurpose Agent]:::hybridStyle
+        CC2[Format Spin-Off]:::hybridStyle
+        CC3[FAQ Extension]:::aiStyle
+        CC4[Cluster Expansion]:::hybridStyle
+        CC5[Internal Link Retrofit]:::aiStyle
+        CC6[Outreach Brief Generator]:::hybridStyle
+        CC7[👤 Human Outreach]:::humanStyle
+    end
+
+    subgraph REFRESH["🔄 REFRESH PIPELINE (underperformers)"]
+        direction TB
+        RF1[Gap Diagnosis]:::hybridStyle
+        RF2[SERP Re-Analysis]:::aiStyle
+        RF3[Updated Brief]:::hybridStyle
+        RF4[👤 Rewrite Decision]:::humanStyle
+    end
+
+    subgraph THENNOW["📈 THEN & NOW — runs across all checkpoints"]
+        direction LR
+        TN1[(Baseline Store)]:::aiStyle
+        TN2[Delta Calculator]:::aiStyle
+        TN3[Forecast vs Actual]:::aiStyle
+        TN4[Cohort Comparison]:::aiStyle
+        TN5[Competitor Delta]:::aiStyle
+        TN6[Visualization Layer]:::aiStyle
+    end
+
+    DIGEST{🚪 Monthly Aftercare Digest}:::gateStyle
+
+    %% ============== MONITOR (continuous) ==============
+    subgraph MON["📊 MONITOR — continuous · site-wide"]
+        direction TB
+        M1[Rank Tracker]:::aiStyle
+        M2[GSC + GA4 Puller]:::aiStyle
+        M3[Anomaly Detector]:::aiStyle
+        M4[Decay Detector]:::aiStyle
+        M5[👤 Diagnosis & Response]:::humanStyle
+    end
+
+    %% ============== ALWAYS HUMAN ==============
+    subgraph ALWAYS_HUMAN["👤 ALWAYS HUMAN — NO AGENTIC SUBSTITUTE"]
+        direction LR
+        H1[Strategic Positioning · ICP]:::humanStyle
+        H2[Backlink Building · PR · Outreach]:::humanStyle
+        H3[Crisis Response]:::humanStyle
+        H4[YMYL Content]:::humanStyle
+        H5[First-Person Experience]:::humanStyle
+    end
+
+    %% ============== FLOW ==============
+    INPUT ==> AUDIT
+    AUDIT ==> SYN
+    SYN ==> PRIO
+    PRIO ==> REPORT
+    REPORT --> GATE1
+    GATE1 -->|approve| ORCH
+
+    ORCH ==> RESEARCH
+    ORCH ==> FIX
+    RESEARCH ==> STRATEGY
+    STRATEGY --> GATE2
+    GATE2 -->|approve| CONTENT
+
+    FIX ==> QA_AI
+    CONTENT ==> QA_AI
+    QA_AI --> QA_HUMAN
+    QA_HUMAN -->|pass| PUB
+    QA_HUMAN -.->|fail · revise| CONTENT
+
+    %% Publish triggers Aftercare + continuous Monitor
+    PUB ==>|content_published event| BASELINE
+    PUB ==> MON
+    BASELINE -.->|store T-zero| TN1
+    BASELINE ==> AC_ORCH
+
+    %% Aftercare cadence
+    AC_ORCH ==> DAY7
+    DAY7 ==> D7_TRIAGE
+    D7_TRIAGE -->|issues| D7_FIX
+    D7_TRIAGE -->|clear| AC_ORCH
+    D7_FIX -.-> AC_ORCH
+
+    AC_ORCH ==> DAY30
+    DAY30 ==> D30_TRIAGE
+    D30_TRIAGE ==> AC_ORCH
+
+    AC_ORCH ==> DAY90
+    DAY90 ==> D90_CLASSIFY
+    D90_CLASSIFY ==> OUTCOMES
+
+    %% Outcome routing
+    O1 ==> REPURPOSE
+    O2 -.->|track in Monitor| MON
+    O3 ==> REFRESH
+    O4 -.->|301 / merge / noindex| MON
+
+    %% Aftercare back to main workflow
+    REPURPOSE -.->|new briefs| C1
+    REPURPOSE -.->|outreach work| H2
+    REFRESH ==>|loops through| CONTENT
+    REFRESH -.->|reset clock| BASELINE
+
+    %% Then & Now wraps all checkpoints
+    DAY7 <-.->|compare| THENNOW
+    DAY30 <-.->|compare| THENNOW
+    DAY90 <-.->|compare| THENNOW
+
+    %% Monthly digest
+    D30_TRIAGE -.->|monthly| DIGEST
+    D90_CLASSIFY -.->|monthly| DIGEST
+    DIGEST -.->|adjust strategy| ORCH
+
+    %% Monitor connections
+    MON -.->|shared data| AC_ORCH
+    MON -.->|insights| ORCH
+    MON -.->|decay trigger| FIX
+    MON -.->|new gaps| RESEARCH
+    MON -.->|quarterly trigger| AUDIT
+
+    %% Always Human informs
+    ALWAYS_HUMAN -.->|informs| ORCH
+    ALWAYS_HUMAN -.->|informs| CONTENT
+    ALWAYS_HUMAN -.->|informs| RESEARCH

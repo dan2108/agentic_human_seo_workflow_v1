@@ -1,0 +1,331 @@
+workflow:
+  name: Agentic Human SEO Workflow
+  version: "1.0"
+  created: 2026-05-07
+  source: agentic_human_seo_workflow_v1/master-agentic-human-workflow.mermaid
+
+  triggers:
+    - {id: new-site-onboarding, type: manual, starts: input-gathering}
+    - {id: content-calendar, type: scheduled, starts: track-b-content}
+    - {id: monitor-anomaly, type: event, starts: targeted-fix-or-research}
+    - {id: quarterly-reaudit, type: scheduled, starts: input-gathering}
+
+  actors:
+    - {id: ai-system, name: AI Agent System, type: system, department: Engineering/AI}
+    - {id: seo-orchestrator, name: SEO Orchestrator, type: system, department: AI}
+    - {id: aftercare-orchestrator, name: Aftercare Orchestrator, type: system, department: AI}
+    - {id: human-seo-manager, name: Human SEO Manager, type: human, department: SEO/Operations}
+    - {id: human-writer, name: Human Writer / SME, type: human, department: Content}
+    - {id: human-outreach, name: Human Outreach Specialist, type: human, department: Marketing/PR}
+
+  steps:
+    - id: input-gathering
+      name: Input Gathering
+      actor: human-seo-manager
+      system: Next.js onboarding form
+      duration: 15-30 min
+      automation_score: {impact: 3, feasibility: 5}
+      automation_recommendation:
+        approach: hybrid
+        tool: Next.js form -> Supabase jobs table
+        effort: 1 day
+
+    - id: phase0-audit
+      name: Phase 0 - Website Audit
+      description: 7-stream parallel audit (Crawl, Technical, On-Page, Content, Authority, Competitive, Analytics)
+      actor: ai-system
+      system: Python agent cluster (Scrapy, Playwright, Lighthouse, GSC API, Ahrefs API)
+      duration: 2-4 hours
+      pain_points:
+        - JS-rendered pages need headless browser agent
+        - Toxic link review requires human judgment on borderline cases
+        - Quality scoring subjectivity requires model calibration
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: ai
+        tool: Scrapy + Playwright, Lighthouse CI, python-ahrefs
+        effort: 3-4 weeks
+        alternatives: [Screaming Frog API, Semrush API, DataForSEO]
+
+    - id: synthesis
+      name: Synthesis Agent
+      description: Aggregates all 7 audit streams into unified findings with priority scores
+      actor: ai-system
+      system: Claude API synthesis agent
+      duration: 10-20 min
+      automation_score: {impact: 5, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: Claude API claude-sonnet-4-6 with structured output
+        effort: 3 days
+
+    - id: backlog-prioritization
+      name: Human Backlog Prioritization
+      actor: human-seo-manager
+      system: Next.js review UI
+      duration: 30-60 min
+      automation_score: {impact: 4, feasibility: 2}
+      automation_recommendation:
+        approach: hybrid
+        tool: Next.js drag-and-drop priority reordering
+        effort: 2 days
+
+    - id: gate1-audit-approval
+      name: Gate 1 - Approve Audit Plan
+      actor: human-seo-manager
+      system: Next.js Gate Review UI
+      duration: 15-30 min
+      decisions:
+        - {condition: Approved, true_branch: seo-orchestrator-dispatch, false_branch: backlog-prioritization}
+      automation_score: {impact: 5, feasibility: 1}
+      automation_recommendation:
+        approach: hybrid
+        tool: Next.js approve/reject with mandatory rejection comment
+        effort: 1 day
+
+    - id: seo-orchestrator-dispatch
+      name: SEO Orchestrator Dispatch
+      description: Fans out work to Research and Technical Remediation in parallel
+      actor: seo-orchestrator
+      system: FastAPI orchestration service
+      duration: under 1 minute
+      automation_score: {impact: 5, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: FastAPI BackgroundTasks + Supabase Realtime
+        effort: 2 days
+
+    - id: research
+      name: Research Phase
+      description: Keyword data, SERP analysis, trend detection, intent classification, competitor gap, SME research
+      actor: ai-system
+      system: Keyword/SERP agent cluster
+      duration: 2-6 hours
+      pain_points:
+        - Intent classification at scale - latency and cost must be managed
+        - SME research is fully manual and a bottleneck
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: ai
+        tool: DataForSEO + Claude API for intent classification
+        effort: 2 weeks
+
+    - id: strategy
+      name: Strategy Phase
+      description: Topic cluster building, priority scoring, content calendar, editorial angle
+      actor: ai-system
+      system: Strategy agent + human editorial input
+      duration: 1-2 hours AI + 30 min human
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: hybrid
+        tool: Claude API for cluster/calendar; human defines editorial angle
+        effort: 1 week
+
+    - id: gate2-strategy-approval
+      name: Gate 2 - Approve Strategy and Calendar
+      actor: human-seo-manager
+      system: Next.js Gate Review UI
+      duration: 30-60 min
+      decisions:
+        - {condition: Approved, true_branch: track-b-content, false_branch: strategy}
+      automation_score: {impact: 5, feasibility: 1}
+      automation_recommendation:
+        approach: hybrid
+        tool: Next.js calendar view with approve/revise controls
+        effort: 2 days
+
+    - id: track-a-technical
+      name: Track A - Technical Remediation
+      description: Schema/sitemap, image optimisation, meta tags, canonicals, robots.txt, redirects
+      actor: ai-system
+      system: Technical agent cluster
+      duration: 2-8 hours
+      automation_score: {impact: 4, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: Custom Python agents + CMS API / Git API
+        effort: 2 weeks
+
+    - id: track-b-content
+      name: Track B - Content Generation
+      description: Brief -> AI outline -> human writer with AI co-pilot -> AI editing -> fact-check -> meta/schema/alt-text
+      actor: human-writer
+      system: Next.js Content Editor + AI agent pipeline
+      duration: 2-4 hours per piece
+      pain_points:
+        - Writer needs brief, outline, research in one view
+        - AI co-pilot must be additive, not overriding human voice
+        - Fact-check agent needs source document access
+      automation_score: {impact: 5, feasibility: 3}
+      automation_recommendation:
+        approach: hybrid
+        tool: TipTap editor + Claude API co-pilot + fact-check agent
+        effort: 3 weeks
+        alternatives: [Notion AI, Grammarly Business, Jasper]
+
+    - id: qa-ai
+      name: AI Quality Checks
+      description: Schema validity, brand voice alignment, plagiarism
+      actor: ai-system
+      system: QA agent cluster
+      duration: 5-15 min
+      automation_score: {impact: 4, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: Claude API (voice/schema), Copyscape API (plagiarism)
+        effort: 3 days
+
+    - id: gate3-human-final-read
+      name: Gate 3 - Human Final Read
+      actor: human-seo-manager
+      system: Next.js Gate Review UI (content preview)
+      duration: 20-45 min per piece
+      decisions:
+        - {condition: Pass, true_branch: publish, false_branch: track-b-content}
+      automation_score: {impact: 5, feasibility: 1}
+      automation_recommendation:
+        approach: hybrid
+        tool: Next.js side-by-side content + QA report + approve/revise
+        effort: 2 days
+
+    - id: publish
+      name: Publish and Distribute
+      description: CMS push, internal linking, index ping automated. Social/email drafted by AI, posted by human.
+      actor: ai-system
+      system: CMS API + distribution agent
+      duration: 15-30 min
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: ai
+        tool: CMS REST API + GSC API + Claude API for social drafts
+        effort: 1 week
+
+    - id: gate4-publish-approval
+      name: Gate 4 - Content Publish Approval
+      description: Final publish timing confirmation before going live
+      actor: human-seo-manager
+      system: Next.js Pipeline View one-click confirm
+      duration: 5 min
+      automation_score: {impact: 3, feasibility: 2}
+      automation_recommendation:
+        approach: hybrid
+        tool: One-click confirm in Pipeline View
+        effort: 0.5 days
+
+    - id: baseline-snapshot
+      name: Baseline Snapshot Agent
+      description: Captures T-zero state on publish for all aftercare delta calculations
+      actor: ai-system
+      system: Snapshot agent -> Supabase baseline_snapshots
+      duration: 5-10 min
+      automation_score: {impact: 5, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: GSC API + GA4 API + rank tracking API on publish event
+        effort: 2 days
+
+    - id: aftercare-day7
+      name: Day 7 Health Check
+      description: Indexation, crawl errors, early CTR/impressions, schema, internal links, distribution
+      actor: ai-system
+      system: Aftercare Orchestrator + check agents
+      duration: 20-30 min
+      automation_score: {impact: 5, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: GSC API + Screaming Frog API + Google Rich Results Test API
+        effort: 3 days
+
+    - id: aftercare-day30
+      name: Day 30 Trajectory Check
+      description: Rank trajectory, traffic vs forecast, cannibalization, backlinks, engagement, SERP features
+      actor: ai-system
+      system: Aftercare Orchestrator + analytics agents
+      duration: 30-45 min
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: ai
+        tool: GSC API + GA4 API + rank tracker + Ahrefs backlink API
+        effort: 3 days
+
+    - id: aftercare-day90
+      name: Day 90 Maturity Assessment
+      description: Full performance, conversion attribution, topical authority, competitor moves, ROI, strategic review
+      actor: ai-system
+      system: Aftercare Orchestrator + analytics agents + human strategic review
+      duration: 45-60 min automated + 30 min human
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: hybrid
+        tool: Full analytics suite + Claude API for ROI narrative + human review in UI
+        effort: 4 days
+
+    - id: outcome-routing
+      name: Outcome Classification and Routing
+      description: Winner -> repurpose, Steady -> monitor, Underperformer -> refresh, Loser -> deprecate
+      actor: ai-system
+      system: Classification engine
+      duration: under 1 minute
+      decisions:
+        - {condition: Winner, true_branch: repurpose-pipeline}
+        - {condition: Steady, true_branch: continuous-monitor}
+        - {condition: Underperformer, true_branch: refresh-pipeline}
+        - {condition: Loser, true_branch: deprecate-action}
+      automation_score: {impact: 5, feasibility: 4}
+      automation_recommendation:
+        approach: ai
+        tool: Rule-based classifier + LLM for edge cases
+        effort: 2 days
+
+    - id: continuous-monitor
+      name: Continuous Monitor
+      description: Site-wide rank tracking, GSC/GA4 pull, anomaly detection, decay detection - always running
+      actor: ai-system
+      system: Monitor agent cluster on daily cron
+      duration: Continuous
+      automation_score: {impact: 5, feasibility: 5}
+      automation_recommendation:
+        approach: ai
+        tool: GSC API + GA4 API + rank tracker + statistical anomaly detection
+        effort: 1 week
+
+  exceptions:
+    - {id: gate-rejection, handling: UI captures reason; job set to needs_revision; assignee notified}
+    - {id: audit-stream-failure, handling: Partial audit proceeds; human alerted via UI}
+    - {id: agent-timeout, handling: Job set to failed; retry available from Pipeline View}
+    - {id: content-qa-failure, handling: QA failures highlighted in Gate 3 UI; returned to writer}
+    - {id: day7-issues, handling: Auto-fix attempted; unfixable issues flagged in Aftercare Dashboard}
+
+  slas:
+    - {step: phase0-audit, target: within 4 hours}
+    - {step: gate1-audit-approval, target: human reviews within 24 hours}
+    - {step: gate2-strategy-approval, target: human reviews within 24 hours}
+    - {step: track-b-content, target: first draft within 3 business days}
+    - {step: gate3-human-final-read, target: human reviews within 24 hours}
+    - {step: aftercare-day7, target: report within 1 hour of trigger}
+    - {step: aftercare-day30, target: report within 1 hour of trigger}
+    - {step: aftercare-day90, target: report within 2 hours of trigger}
+
+  kpis:
+    - {name: Audit-to-Strategy Cycle Time, target: under 3 business days}
+    - {name: Gate Throughput Rate, target: over 80% approved on first pass}
+    - {name: Winner Rate Day 90, target: over 40% of published pieces}
+    - {name: Organic Traffic Lift, target: over 15% MoM after 90 days}
+    - {name: Time to Index, target: under 48 hours from publish}
+
+  future_state:
+    stack:
+      frontend: Next.js 14 App Router + React Flow + TipTap + Recharts
+      backend: FastAPI (Python) with async agent orchestration
+      database: Supabase (PostgreSQL + Realtime)
+      task_queue: FastAPI BackgroundTasks for short jobs; Celery + Redis for long-running aftercare
+    ui_screens:
+      - id: pipeline-view
+        description: React Flow diagram with live node status. Gates pulse amber awaiting human.
+      - id: gate-review
+        description: Full-screen per-gate review UI with approve/revise controls and AI output display.
+      - id: content-editor
+        description: Three-panel TipTap workspace - brief+outline, editor, AI co-pilot chat.
+      - id: aftercare-dashboard
+        description: Per-page Day 7/30/90 tabs with Then-and-Now delta charts and outcome badges.

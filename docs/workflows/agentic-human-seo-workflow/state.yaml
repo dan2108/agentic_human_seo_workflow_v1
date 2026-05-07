@@ -1,0 +1,12 @@
+workflow_name: Agentic Human SEO Workflow
+slug: agentic-human-seo-workflow
+current_phase: complete
+completed_phases: [1, 2, 3, 4, 5, 6, 7, 8]
+started_at: 2026-05-07T00:00:00Z
+last_updated: 2026-05-08T00:00:00Z
+interrogation_source: agentic_human_seo_workflow_v1/master-agentic-human-workflow.mermaid
+notes: >
+  As-is workflow derived directly from master-agentic-human-workflow.mermaid.
+  To-be adds Next.js + FastAPI UI layer with four screens:
+  Pipeline View, Gate Review, Content Editor, Aftercare Dashboard.
+  Solo developer build. Backend recommendation: FastAPI + Supabase.

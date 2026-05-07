@@ -1,0 +1,19 @@
+{
+  "autonomy_level": "guided",
+  "build_tdd_enforced": true,
+  "build_parallel_research": true,
+  "build_xml_plans": true,
+  "build_linear_sync": false,
+  "build_fresh_context": true,
+  "build_wave_parallel": true,
+  "build_nyquist_enforce": true,
+  "build_persuasion": true,
+  "build_quick_mode": false,
+  "build_scaffold_auto": true,
+  "build_standards_inject": true,
+  "standards_enforcement_mode": "advisory",
+  "build_git_workflow": "feature-branch",
+  "feature_flags": {
+    "ai_workflows": true
+  }
+}

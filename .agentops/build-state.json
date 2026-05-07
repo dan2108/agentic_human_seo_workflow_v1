@@ -1,0 +1,17 @@
+{
+  "name": "Agentic Human SEO Workflow",
+  "slug": "agentic-seo-workflow",
+  "phase": "EXECUTION",
+  "phase_completed": ["BRAINSTORM","INTERROGATION","PLANNING","TASK_BREAKDOWN","SCAFFOLD"],
+  "started_at": "2026-05-08T00:00:00Z",
+  "updated_at": "2026-05-08T00:00:00Z",
+  "artifact_root": "docs/build/agentic-seo-workflow/",
+  "git_workflow": "feature-branch",
+  "git_branch": "build/agentic-seo-workflow",
+  "flags": {
+    "autonomy_level": "guided",
+    "build_tdd_enforced": true,
+    "build_wave_parallel": true,
+    "build_nyquist_enforce": true
+  }
+}
