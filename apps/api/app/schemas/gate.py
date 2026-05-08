@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 
 
@@ -9,5 +10,6 @@ class GateResponse(BaseModel):
     id: str
     gate_id: str
     status: str
-    decision: str | None
-    comment: str | None
+    decision: str | None = None
+    comment: str | None = None
+    synthesis: dict[str, Any] = {}
