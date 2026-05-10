@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: str = ""
     google_refresh_token: str = ""
+    google_access_token: str = ""
+    wp_base_url: str = ""
+    wp_app_password: str = ""
     redis_url: str = "redis://localhost:6379/0"
     cors_origins: list[str] = ["http://localhost:3000"]
     api_secret_key: str = "change-me"
