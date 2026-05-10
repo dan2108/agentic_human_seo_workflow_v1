@@ -1,3 +1,83 @@
+# STAR — Verify Gate Dispatch Wiring (2026-05-10)
+
+## Situation
+- New: content_orchestrator.py, publish_orchestrator.py, gates.py rewrite, test_gates.py extension, 3 new settings
+- pytest from `cd apps/api` failed: ModuleNotFoundError structlog — venv not active
+- cd polluted cwd; rerun from repo root with absolute paths
+
+## Task
+1. Locate apps/api venv
+2. Run pytest with right interpreter
+3. 8/8 tests pass
+
+## Action
+1. Return to repo root
+2. Find venv (.venv, uv env)
+3. Run pytest via that interpreter
+4. Fix failures
+
+## Result
+8/8 green; each test_approve_gate{N}_dispatches_* passes.
+
+---
+
+# STAR — Wire Gate → Orchestrator Handoff (2026-05-10)
+
+## Situation
+- gates.py:approve_gate updates DB but does not dispatch next phase
+- Research + Aftercare orchestrators exist but never invoked from gate approval
+- No Content or Publish orchestrators yet — only standalone agents
+- Pipeline stalls at Gate 1 even with Sprints 2-4 code present
+
+## Task
+1. Gate 1 approve → ResearchOrchestrator.dispatch in background
+2. Gate 2 approve → content pipeline (brief → outline)
+3. Gate 3 approve → publish pipeline (cms → linking → distribution → index_ping → snapshot)
+4. Gate 4 approve → AftercareOrchestrator.schedule (Celery)
+5. Use FastAPI BackgroundTasks (existing pattern in jobs.py)
+6. Dispatch failure does NOT roll back gate approval
+
+## Action
+1. Read apps/api/app/routers/jobs.py for BackgroundTasks pattern
+2. Read seo_orchestrator constructor for settings injection
+3. Create apps/api/app/orchestrators/content_orchestrator.py (brief + outline)
+4. Create apps/api/app/orchestrators/publish_orchestrator.py (cms+linking+distribution+index_ping+snapshot)
+5. Modify gates.py approve_gate: BackgroundTasks param, fetch job for site_url, dispatch per gate_name
+6. Add unit test in test_gates.py asserting BackgroundTasks.add_task called with right orchestrator
+
+## Result
+pytest apps/api/tests/test_gates.py green; approve_gate response immediate; gate1 dispatch logged; new orchestrator files lint-clean.
+
+---
+
+# STAR — Codebase Audit (2026-05-10)
+
+## Situation
+- Branch: build/agentic-seo-workflow on Windows monorepo
+- 3 commits landed (Sprint 0 scaffold + pipeline UI shell + Sprint 1 audit agents/AuditGate)
+- Active build per .agentops/build-state.json; many modified/untracked files in apps/api and apps/web indicate Sprint 2-4 work in flight
+- User invoked /agentops:build asking for codebase audit + next steps (not a fresh build kickoff)
+
+## Task — Success criteria
+1. Identify in-progress build's current phase
+2. Inventory shipped vs in-flight vs not-started work
+3. Map progress against tasks/todo.md sprints S0-S7
+4. Recommend 3-5 prioritized next steps with concrete file paths
+
+## Action — Concrete steps
+1. Read .agentops/build-state.json for phase context
+2. Read docs/build/agentic-seo-workflow/ artifacts (brief, requirements, plan)
+3. Inventory apps/api/app/agents/** (research/content/qa/publish/aftercare)
+4. Inventory apps/api/app/orchestrators/** for orchestrator coverage
+5. Inventory apps/web/components/gates/** and app/(dashboard)/** for UI gates
+6. Cross-reference modified/untracked file list with sprint structure
+7. Produce written status report
+
+## Result — Verification
+Status report covering: (a) committed/complete, (b) modified-uncommitted/in-flight, (c) remaining sprints, (d) prioritized next moves with file paths the user can act on.
+
+---
+
 ## Sprint 0 — Foundations (Week 1-2)
 - [ ] S0-T01 [M] Init git repo + feature branch `build/agentic-seo-workflow`
 - [ ] S0-T02 [M] pnpm install: Next.js deps (reactflow, tiptap, recharts, supabase-js)
@@ -97,19 +177,9 @@
 - [ ] S7-T07 [S] TypeScript strict mode clean on apps/web
 - [ ] S7-T08 [S] Update README.md with final quick-start instructions
 **Done condition:** Full pipeline runs without manual intervention except at 4 gate points; no API keys in client JS; test suite green.
-
-
 ---
-## STAR: S0-T02/T03 — Dependency Installation (2026-05-08)
-**Situation:** Scaffold committed. node_modules and .venv absent.
-**Task:** apps/web deps installed (next binary), apps/api deps installed (fastapi importable).
-**Action:** pnpm install in apps/web; pip install uv then uv sync in apps/api.
-**Result:** pnpm exec next --version = 14.x; uv run python -c "import fastapi" exits 0.
-
-
 ---
-## STAR: Sprint 1 — Audit Agents + Gate 1 UI (2026-05-08)
-**Situation:** Sprint 0 done. 7 agent stubs in apps/api/app/agents/ with no logic.
-**Task:** 7 agents write to audit_results; SynthesisAgent aggregates; AuditGate UI renders report; approve dispatches next phase.
-**Action:** Wave 1 (7 agents parallel), Wave 2 (Synthesis + Orchestrator), Wave 3 (Gate UI + API).
-**Result:** pytest green; next build clean; POST /jobs/ triggers full audit chain.
+## Sprint 4 Frontend — STAR
+- [ ] PublishGate.tsx component
+- [ ] gate4 routing in [gateId]/page.tsx
+- [ ] TypeScript check (npx tsc --noEmit)

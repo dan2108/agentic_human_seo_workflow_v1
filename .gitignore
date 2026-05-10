@@ -41,3 +41,20 @@ htmlcov/
 # Celery
 celerybeat-schedule
 celerybeat.pid
+
+# Build artifacts
+*.tsbuildinfo
+
+# AgentOps runtime state (keep flags.json shared, ignore everything else)
+.agentops/audit.jsonl
+.agentops/budget.json
+.agentops/build-state.json
+.agentops/failures.jsonl
+.agentops/next.log
+.agentops/relay.log
+.agentops/session-start
+.agentops/star-obs-count
+.agentops/star-plan-active
+.agentops/telemetry.jsonl
+.agentops/tests-ran
+.agentops/unicode-scan-cache
