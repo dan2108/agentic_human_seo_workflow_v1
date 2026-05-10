@@ -1,13 +1,25 @@
 import { notFound } from "next/navigation";
 import AuditGate from "@/components/gates/AuditGate";
+import StrategyGate from "@/components/gates/StrategyGate";
+import ContentGate from "@/components/gates/ContentGate";
+import PublishGate from "@/components/gates/PublishGate";
 import { api } from "@/lib/api/client";
 
 interface Props { params: Promise<{ gateId: string }> }
 
+type GateData = {
+  id: string;
+  gate_id: string;
+  status: string;
+  decision: string | null;
+  comment: string | null;
+  synthesis: Record<string, unknown>;
+};
+
 export default async function GatePage({ params }: Props) {
   const { gateId } = await params;
 
-  let gate;
+  let gate: GateData;
   try {
     gate = await api.gates.get(gateId);
   } catch {
@@ -22,6 +34,48 @@ export default async function GatePage({ params }: Props) {
   };
 
   const gateName = gateId.split(":")[0];
+  const jobId = gateId.split(":")[1] ?? "";
+
+  function renderGate() {
+    switch (gateName) {
+      case "gate2":
+        return (
+          <StrategyGate
+            gateId={gateName}
+            jobId={jobId}
+            strategy={gate.synthesis ?? {}}
+            currentStatus={gate.status}
+          />
+        );
+      case "gate3":
+        return (
+          <ContentGate
+            gateId={gateName}
+            jobId={jobId}
+            qaData={gate.synthesis ?? {}}
+            currentStatus={gate.status}
+          />
+        );
+      case "gate4":
+        return (
+          <PublishGate
+            gateId={gateName}
+            jobId={jobId}
+            publishData={gate.synthesis ?? {}}
+            currentStatus={gate.status}
+          />
+        );
+      default:
+        return (
+          <AuditGate
+            gateId={gateName}
+            jobId={jobId}
+            synthesis={gate.synthesis ?? {}}
+            currentStatus={gate.status}
+          />
+        );
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -40,12 +94,7 @@ export default async function GatePage({ params }: Props) {
         </span>
       </div>
       <div className="flex-1 overflow-auto p-6">
-        <AuditGate
-          gateId={gateName}
-          jobId={gateId.split(":")[1] ?? ""}
-          synthesis={gate.synthesis ?? {}}
-          currentStatus={gate.status}
-        />
+        {renderGate()}
       </div>
     </div>
   );

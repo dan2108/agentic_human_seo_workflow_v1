@@ -19,9 +19,12 @@ const nodeTypes = {
   gate: GateNode,
 };
 
-function buildNodes(stepStatuses: Record<string, string> = {}): Node[] {
+function buildNodes(stepStatuses: Record<string, string> = {}, jobId?: string): Node[] {
   const s = (id: string): NodeStatus =>
     (stepStatuses[id] as NodeStatus) ?? "queued";
+
+  const gateId = (name: string) =>
+    jobId ? `${name}:${jobId}` : name;
 
   const cx = 280;
   const rowH = 130;
@@ -44,7 +47,7 @@ function buildNodes(stepStatuses: Record<string, string> = {}): Node[] {
       id: "gate-1",
       type: "gate",
       position: { x: cx + 10, y: y(2) },
-      data: { label: "Audit Approval", gateId: "gate-1", status: s("gate-1") || "pending" },
+      data: { label: "Audit Approval", gateId: gateId("gate1"), status: s("gate-1") || "pending" },
     },
     {
       id: "keyword-research",
@@ -62,7 +65,7 @@ function buildNodes(stepStatuses: Record<string, string> = {}): Node[] {
       id: "gate-2",
       type: "gate",
       position: { x: cx + 10, y: y(5) },
-      data: { label: "Strategy Approval", gateId: "gate-2", status: s("gate-2") || "pending" },
+      data: { label: "Strategy Approval", gateId: gateId("gate2"), status: s("gate-2") || "pending" },
     },
     {
       id: "content-brief",
@@ -80,7 +83,7 @@ function buildNodes(stepStatuses: Record<string, string> = {}): Node[] {
       id: "gate-3",
       type: "gate",
       position: { x: cx + 10, y: y(8) },
-      data: { label: "Content Approval", gateId: "gate-3", status: s("gate-3") || "pending" },
+      data: { label: "Content Approval", gateId: gateId("gate3"), status: s("gate-3") || "pending" },
     },
     {
       id: "publish",
@@ -92,7 +95,7 @@ function buildNodes(stepStatuses: Record<string, string> = {}): Node[] {
       id: "gate-4",
       type: "gate",
       position: { x: cx + 10, y: y(10) },
-      data: { label: "Launch Approval", gateId: "gate-4", status: s("gate-4") || "pending" },
+      data: { label: "Launch Approval", gateId: gateId("gate4"), status: s("gate-4") || "pending" },
     },
     {
       id: "aftercare",
@@ -129,8 +132,8 @@ interface PipelineCanvasProps {
   stepStatuses?: Record<string, string>;
 }
 
-export default function PipelineCanvas({ jobId: _jobId, stepStatuses = {} }: PipelineCanvasProps) {
-  const nodes = useMemo(() => buildNodes(stepStatuses), [stepStatuses]);
+export default function PipelineCanvas({ jobId, stepStatuses = {} }: PipelineCanvasProps) {
+  const nodes = useMemo(() => buildNodes(stepStatuses, jobId), [stepStatuses, jobId]);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     console.log("node clicked:", node.id);
