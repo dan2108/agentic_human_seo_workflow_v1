@@ -8,37 +8,37 @@ from app.agents.base import BaseAuditAgent
 log = structlog.get_logger()
 
 
-class IntentAgent(BaseAuditAgent):
+class CalendarAgent(BaseAuditAgent):
     def __init__(self, db: Any, anthropic_api_key: str) -> None:
         super().__init__(db)
         self._client = anthropic.Anthropic(api_key=anthropic_api_key)
 
     async def run(self, job_id: str, site_url: str) -> dict[str, Any]:
-        log.info("intent_agent.run", job_id=job_id, site_url=site_url)
+        log.info("calendar_agent.run", job_id=job_id, site_url=site_url)
 
-        kw_row = (
+        cluster_row = (
             self._db.table("audit_results")
             .select("data_json")
             .eq("job_id", job_id)
-            .eq("stream", "keywords")
+            .eq("stream", "clusters")
             .execute()
         )
-        rows = kw_row.data or []
-        keywords: list[str] = []
+        rows = cluster_row.data or []
+        clusters: list[dict[str, Any]] = []
         for row in rows:
-            for kw in row.get("data_json", {}).get("keywords", []):
-                keywords.append(kw.get("keyword", ""))
+            clusters.extend(row.get("data_json", {}).get("clusters", []))
 
         prompt = (
-            "Classify the search intent for each of the following keywords. "
-            "Return a JSON object with key 'classifications', an array of objects each with "
-            "'keyword' and 'intent' (one of: informational, navigational, commercial, transactional).\n\n"
-            f"Keywords: {json.dumps(keywords)}"
+            "Create a 12-week content calendar from these topic clusters. "
+            "Return a JSON object with key 'entries', an array of objects each with: "
+            "'week' (int 1-12), 'topic' (string), 'keyword' (primary keyword), "
+            "'content_type' (one of: pillar, supporting, listicle), 'estimated_traffic' (int).\n\n"
+            f"Topic clusters: {json.dumps(clusters)}"
         )
 
         msg = self._client.messages.create(
             model="claude-haiku-4-5",
-            max_tokens=1024,
+            max_tokens=2048,
             messages=[{"role": "user", "content": prompt}],
         )
 
@@ -46,6 +46,6 @@ class IntentAgent(BaseAuditAgent):
         try:
             parsed = json.loads(raw)
         except json.JSONDecodeError:
-            parsed = {"classifications": []}
+            parsed = {"entries": []}
 
-        return self._persist(job_id, "intent", parsed)
+        return self._persist(job_id, "calendar", parsed)

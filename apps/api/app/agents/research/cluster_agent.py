@@ -8,32 +8,31 @@ from app.agents.base import BaseAuditAgent
 log = structlog.get_logger()
 
 
-class IntentAgent(BaseAuditAgent):
+class ClusterAgent(BaseAuditAgent):
     def __init__(self, db: Any, anthropic_api_key: str) -> None:
         super().__init__(db)
         self._client = anthropic.Anthropic(api_key=anthropic_api_key)
 
     async def run(self, job_id: str, site_url: str) -> dict[str, Any]:
-        log.info("intent_agent.run", job_id=job_id, site_url=site_url)
+        log.info("cluster_agent.run", job_id=job_id, site_url=site_url)
 
-        kw_row = (
+        intent_row = (
             self._db.table("audit_results")
             .select("data_json")
             .eq("job_id", job_id)
-            .eq("stream", "keywords")
+            .eq("stream", "intent")
             .execute()
         )
-        rows = kw_row.data or []
-        keywords: list[str] = []
+        rows = intent_row.data or []
+        classifications: list[dict[str, Any]] = []
         for row in rows:
-            for kw in row.get("data_json", {}).get("keywords", []):
-                keywords.append(kw.get("keyword", ""))
+            classifications.extend(row.get("data_json", {}).get("classifications", []))
 
         prompt = (
-            "Classify the search intent for each of the following keywords. "
-            "Return a JSON object with key 'classifications', an array of objects each with "
-            "'keyword' and 'intent' (one of: informational, navigational, commercial, transactional).\n\n"
-            f"Keywords: {json.dumps(keywords)}"
+            "Group these keyword-intent pairs into topic clusters. "
+            "Return a JSON object with key 'clusters', an array of objects each with: "
+            "'topic' (string), 'keywords' (array of strings), 'pillar' (bool — true if this is a pillar page topic).\n\n"
+            f"Keyword classifications: {json.dumps(classifications)}"
         )
 
         msg = self._client.messages.create(
@@ -46,6 +45,6 @@ class IntentAgent(BaseAuditAgent):
         try:
             parsed = json.loads(raw)
         except json.JSONDecodeError:
-            parsed = {"classifications": []}
+            parsed = {"clusters": []}
 
-        return self._persist(job_id, "intent", parsed)
+        return self._persist(job_id, "clusters", parsed)
